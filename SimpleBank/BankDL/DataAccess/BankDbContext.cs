@@ -1,12 +1,11 @@
 ﻿using BankDL.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.ValueGeneration;
 
 namespace BankDL.DataAccess
 {
-    public class BankDbContext : DbContext
+	public class BankDbContext : DbContext
     {
         public DbSet<AccountEntity> Accounts { get; set; }
 

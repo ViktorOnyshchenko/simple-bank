@@ -1,13 +1,12 @@
 ﻿using BankAPI.DTO.AccountDTO;
 using BankAPI.DTO.UserDTO;
-using BankDL.DataAccess;
 using BankDL.Interfaces;
 using BankDL.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BankAPI.Controllers
 {
-    [Route("api/[controller]")]
+	[Route("api/[controller]")]
     [ApiController]
     public class AccountsController : ControllerBase
     {
