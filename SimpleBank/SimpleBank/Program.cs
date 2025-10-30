@@ -1,3 +1,7 @@
+using BankDL.DataAccess;
+using BankDL.Interfaces;
+using BankDL.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace SimpleBank
 {
@@ -14,7 +18,15 @@ namespace SimpleBank
 			builder.Services.AddEndpointsApiExplorer();
 			builder.Services.AddSwaggerGen();
 
-			var app = builder.Build();
+			//Dependencies registration
+			builder.Services.AddDbContext<BankDbContext>(options =>
+			{
+				options.UseInMemoryDatabase("SimpleBankDb");
+			});
+
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            var app = builder.Build();
 
 			// Configure the HTTP request pipeline.
 			if (app.Environment.IsDevelopment())
