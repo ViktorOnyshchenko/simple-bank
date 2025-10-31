@@ -26,7 +26,7 @@ namespace BankDL.Repositories
 		public async Task UpdateFundsAsync(Guid id, Action fundsOperation)
 		{
 			AccountEntity accountEntity = await _dbSet.SingleAsync(acc => acc.Id == id);
-			fundsOperation();
+			await Task.Run(() => fundsOperation());
 		}
 	}
 }
