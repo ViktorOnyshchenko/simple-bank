@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankAPI", "SimpleBank\BankAPI.csproj", "{D91D2AED-25BD-4AF3-8989-5ECD33CAD537}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BankAPI", "SimpleBank\BankAPI.csproj", "{D91D2AED-25BD-4AF3-8989-5ECD33CAD537}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BankDL", "BankDL\BankDL.csproj", "{CE7C24E0-36A4-4311-AE24-F0E3216200D7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankDLTests", "BankDLTests\BankDLTests.csproj", "{2384BADD-1855-4653-9063-A611119F3D33}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{D91D2AED-25BD-4AF3-8989-5ECD33CAD537}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D91D2AED-25BD-4AF3-8989-5ECD33CAD537}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D91D2AED-25BD-4AF3-8989-5ECD33CAD537}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CE7C24E0-36A4-4311-AE24-F0E3216200D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE7C24E0-36A4-4311-AE24-F0E3216200D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE7C24E0-36A4-4311-AE24-F0E3216200D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE7C24E0-36A4-4311-AE24-F0E3216200D7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2384BADD-1855-4653-9063-A611119F3D33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2384BADD-1855-4653-9063-A611119F3D33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2384BADD-1855-4653-9063-A611119F3D33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2384BADD-1855-4653-9063-A611119F3D33}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
