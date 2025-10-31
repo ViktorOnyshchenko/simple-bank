@@ -21,6 +21,12 @@ namespace BankAPI.Controllers
         public async Task<IActionResult> GetAllAccounts(CancellationToken cancellationToken)
         {
             IEnumerable<AccountEntity> accountEntities = await _unitOfWork.AccountRepository.GetAllAsync(cancellationToken);
+
+            if (!accountEntities.Any())
+            {
+                return NotFound("There are no accounts.");
+            }
+
             List<AccountDTO> accountDTOs = new();
 
             foreach (AccountEntity accountEntity in accountEntities)
