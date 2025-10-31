@@ -33,7 +33,7 @@ namespace BankDL.Repositories
 
         public async Task CreateAsync(T entity, CancellationToken cancellationToken)
         {
-            await _dbSet.AddAsync(entity, cancellationToken);
+			await _dbSet.AddAsync(entity, cancellationToken);
         }
-    }
+	}
 }

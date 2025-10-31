@@ -83,13 +83,12 @@ namespace BankAPI.Controllers
                 PhoneNumber = user.PhoneNumber
             };
 
-            AccountEntity accountModel = new()
+            AccountEntity accountEnitity = new()
             {
-                Id = Guid.NewGuid(),
                 User = userEntity
             };
 
-            await _unitOfWork.AccountRepository.CreateAsync(accountModel, cancellationToken);
+            await _unitOfWork.AccountRepository.CreateAsync(accountEnitity, cancellationToken);
             await _unitOfWork.CommitAsync();
 
             return Ok();
