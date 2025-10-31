@@ -7,5 +7,7 @@ namespace BankDL.Interfaces
 		public Task<AccountEntity?> GetDetailsByAccountNumberAsync(int accountNumber, CancellationToken cancellationToken);
 
 		public Task<bool> ExistAccountByUserPhoneNumberAsync(string phoneNumber, CancellationToken cancellationToken);
+
+		public Task UpdateFundsAsync(Guid id, Action fundOperation);
 	}
 }

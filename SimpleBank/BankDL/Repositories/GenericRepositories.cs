@@ -7,7 +7,7 @@ namespace BankDL.Repositories
 {
 	public class GenericRepository<T> : IRepository<T> where T : PersistedEntity
     {
-        protected readonly BankDbContext _dbContext;
+        private readonly BankDbContext _dbContext;
         protected readonly DbSet<T> _dbSet;
 
         public GenericRepository(BankDbContext context)

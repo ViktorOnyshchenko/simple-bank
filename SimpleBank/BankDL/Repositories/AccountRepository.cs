@@ -13,14 +13,20 @@ namespace BankDL.Repositories
 
 		public async Task<AccountEntity?> GetDetailsByAccountNumberAsync(int accountNumber, CancellationToken cancellationToken)
 		{
-            return await _dbContext.Accounts.Include(acc => acc.User)
+            return await _dbSet.Include(acc => acc.User)
 				.SingleOrDefaultAsync(acc => acc.AccountNumber.Equals(accountNumber), cancellationToken);
         }
 
 		public async Task<bool> ExistAccountByUserPhoneNumberAsync(string phoneNumber, CancellationToken cancellationToken)
 		{
-            return await _dbContext.Accounts.Include(acc => acc.User)
+            return await _dbSet.Include(acc => acc.User)
                 .AnyAsync(acc => acc.User!.PhoneNumber.Equals(phoneNumber), cancellationToken);
         }
+
+		public async Task UpdateFundsAsync(Guid id, Action fundsOperation)
+		{
+			AccountEntity accountEntity = await _dbSet.SingleAsync(acc => acc.Id == id);
+			fundsOperation();
+		}
 	}
 }
