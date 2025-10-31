@@ -60,7 +60,7 @@ namespace BankDL.DataAccess
 
 public class OrderIdValueGenerator : ValueGenerator<int>
 {
-    private int _current;
+    private int _current = 10000;
 
     public override bool GeneratesTemporaryValues => false;
 

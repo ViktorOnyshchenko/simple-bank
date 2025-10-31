@@ -8,6 +8,6 @@ namespace BankDL.Interfaces
 
 		public Task<bool> ExistAccountByUserPhoneNumberAsync(string phoneNumber, CancellationToken cancellationToken);
 
-		public Task UpdateFundsAsync(Guid id, Action fundOperation);
+		public Task UpdateFundsAsync(Guid id, Action fundsOperation);
 	}
 }
