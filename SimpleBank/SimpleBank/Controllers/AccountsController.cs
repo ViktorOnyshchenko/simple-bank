@@ -45,7 +45,7 @@ namespace BankAPI.Controllers
 
             if (accountEntity == null) 
             {
-                return NotFound();
+                return NotFound($"Account with {accountNumber} is not found.");
             }
 
             AccountDetailedDTO accountDTO = new()
