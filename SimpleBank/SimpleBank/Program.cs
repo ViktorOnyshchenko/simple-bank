@@ -1,6 +1,5 @@
 using BankDL.DataAccess;
 using BankDL.Interfaces;
-using BankDL.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace SimpleBank
