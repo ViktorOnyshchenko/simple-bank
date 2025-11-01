@@ -1,5 +1,5 @@
 ﻿using BankDL.DataAccess;
-using BankDL.Models;
+using BankDL.Entities;
 using BankDL.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -121,8 +121,7 @@ namespace BankDLTests
 			new UserEntity
 			{
 				Id = id ?? Guid.NewGuid(),
-				FirstName = "John",
-				LastName = "Doe",
+				UserName = "John Doe",
 				PhoneNumber = phone ?? "555-1234"
 			};
 

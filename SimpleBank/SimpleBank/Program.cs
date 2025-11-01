@@ -1,5 +1,7 @@
 using BankDL.DataAccess;
+using BankDL.Entities;
 using BankDL.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace SimpleBank
@@ -23,9 +25,17 @@ namespace SimpleBank
 				options.UseInMemoryDatabase("SimpleBankDb");
 			});
 
-            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+			builder.Services.AddIdentityApiEndpoints<UserEntity>()
+				.AddRoles<IdentityRole<Guid>>()
+				.AddUserManager<UserManager<UserEntity>>()
+				.AddSignInManager<SignInManager<UserEntity>>()
+				.AddEntityFrameworkStores<BankDbContext>();
 
-            var app = builder.Build();
+			builder.Services.AddAuthorization();
+
+			builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+			var app = builder.Build();
 
 			// Configure the HTTP request pipeline.
 			if (app.Environment.IsDevelopment())
@@ -36,8 +46,8 @@ namespace SimpleBank
 
 			app.UseHttpsRedirection();
 
+			app.UseAuthentication();
 			app.UseAuthorization();
-
 
 			app.MapControllers();
 

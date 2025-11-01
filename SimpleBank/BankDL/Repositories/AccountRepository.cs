@@ -1,6 +1,6 @@
 ﻿using BankDL.DataAccess;
+using BankDL.Entities;
 using BankDL.Interfaces;
-using BankDL.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace BankDL.Repositories
@@ -20,7 +20,7 @@ namespace BankDL.Repositories
 		public async Task<bool> ExistAccountByUserPhoneNumberAsync(string phoneNumber, CancellationToken cancellationToken)
 		{
             return await _dbSet.Include(acc => acc.User)
-                .AnyAsync(acc => acc.User!.PhoneNumber.Equals(phoneNumber), cancellationToken);
+                .AnyAsync(acc => acc.User!.PhoneNumber!.Equals(phoneNumber), cancellationToken);
         }
 
 		public async Task UpdateFundsAsync(Guid id, Action fundsOperation)

@@ -1,15 +1,15 @@
-﻿using BankDL.Models;
+﻿using BankDL.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.ValueGeneration;
 
 namespace BankDL.DataAccess
 {
-	public class BankDbContext : DbContext
+	public class BankDbContext : IdentityDbContext<UserEntity, IdentityRole<Guid>, Guid>
     {
         public DbSet<AccountEntity> Accounts { get; set; }
-
-        public DbSet<UserEntity> Users { get; set; }
 
         public async Task BeginTransactionAsync()
         {
@@ -33,7 +33,9 @@ namespace BankDL.DataAccess
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<UserEntity>(e =>
+			base.OnModelCreating(modelBuilder);
+
+			modelBuilder.Entity<UserEntity>(e =>
             {
                 e.HasKey(u => u.Id);
 

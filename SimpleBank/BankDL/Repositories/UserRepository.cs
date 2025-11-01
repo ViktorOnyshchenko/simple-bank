@@ -1,6 +1,7 @@
 ﻿using BankDL.DataAccess;
+using BankDL.Entities;
 using BankDL.Interfaces;
-using BankDL.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace BankDL.Repositories
 {
@@ -9,5 +10,10 @@ namespace BankDL.Repositories
         public UserRepository(BankDbContext bankDbContext) : base(bankDbContext)
         {
         }
-    }
+
+		public async Task<UserEntity> GetUserByPhoneNumberAsync(string phoneNumber, CancellationToken cancellationToken)
+		{
+			return await _dbSet.SingleAsync(u => u.PhoneNumber!.Equals(phoneNumber));
+		}
+	}
 }

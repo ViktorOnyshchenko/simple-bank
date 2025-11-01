@@ -1,97 +1,153 @@
 ﻿using BankAPI.DTO.AccountDTO;
 using BankAPI.DTO.UserDTO;
+using BankDL.Entities;
 using BankDL.Interfaces;
-using BankDL.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace BankAPI.Controllers
 {
+	[Authorize]
 	[Route("api/[controller]")]
-    [ApiController]
-    public class AccountsController : ControllerBase
-    {
-        private readonly IUnitOfWork _unitOfWork;
+	[ApiController]
+	public class AccountsController : ControllerBase
+	{
+		private readonly IUnitOfWork _unitOfWork;
+		private readonly UserManager<UserEntity> _userManager;
+		private readonly SignInManager<UserEntity> _userSignInManager;
 
-        public AccountsController(IUnitOfWork unitOfWork)
-        {
-            _unitOfWork = unitOfWork;
-        }
+		public AccountsController(
+			IUnitOfWork unitOfWork,
+			UserManager<UserEntity> userManager,
+			SignInManager<UserEntity> userSignInManager)
+		{
+			_unitOfWork = unitOfWork;
+			_userManager = userManager;
+			_userSignInManager = userSignInManager;
+		}
 
-        [HttpGet]
-        public async Task<IActionResult> GetAllAccounts(CancellationToken cancellationToken)
-        {
-            IEnumerable<AccountEntity> accountEntities = await _unitOfWork.AccountRepository.GetAllAsync(cancellationToken);
+		[HttpGet]
+		public async Task<IActionResult> GetAllAccounts(CancellationToken cancellationToken)
+		{
+			IEnumerable<AccountEntity> accountEntities = await _unitOfWork.AccountRepository.GetAllAsync(cancellationToken);
 
-            if (!accountEntities.Any())
-            {
-                return NotFound("There are no accounts.");
-            }
+			if (!accountEntities.Any())
+			{
+				return NotFound("There are no accounts.");
+			}
 
-            List<AccountDTO> accountDTOs = new();
+			List<AccountDTO> accountDTOs = new();
 
-            foreach (AccountEntity accountEntity in accountEntities)
-            {
-                AccountDTO accountDTO = new()
-                {
-                    Id = accountEntity.Id,
-                    AccountNumber = accountEntity.AccountNumber,
-                    HolderId = accountEntity.UserId
-                };
+			foreach (AccountEntity accountEntity in accountEntities)
+			{
+				AccountDTO accountDTO = new()
+				{
+					Id = accountEntity.Id,
+					AccountNumber = accountEntity.AccountNumber,
+					HolderId = accountEntity.UserId
+				};
 
-                accountDTOs.Add(accountDTO);
-            }
+				accountDTOs.Add(accountDTO);
+			}
 
-            return Ok(accountDTOs);
-        }
+			return Ok(accountDTOs);
+		}
 
-        [HttpGet("/{accountNumber}")]
-        public async Task<IActionResult> GetAccountDetailsByNumber([FromRoute] int accountNumber, CancellationToken cancellationToken)
-        {
-            AccountEntity? accountEntity = await _unitOfWork.AccountRepository.GetDetailsByAccountNumberAsync(accountNumber, cancellationToken);
+		[HttpGet("{accountNumber}")]
+		public async Task<IActionResult> GetAccountDetailsByNumber([FromRoute] int accountNumber, CancellationToken cancellationToken)
+		{
+			AccountEntity? accountEntity = await _unitOfWork.AccountRepository.GetDetailsByAccountNumberAsync(accountNumber, cancellationToken);
 
-            if (accountEntity == null) 
-            {
-                return NotFound($"Account with {accountNumber} is not found.");
-            }
+			if (accountEntity == null)
+			{
+				return NotFound($"Account with {accountNumber} is not found.");
+			}
 
-            AccountDetailedDTO accountDTO = new()
-            {
-                Id = accountEntity.Id,
-                AccountNumber = accountEntity.AccountNumber,
-                HolderName = string.Join(" ", accountEntity.User!.FirstName, accountEntity.User.LastName),
-                HolderPhoneNumber = accountEntity.User.PhoneNumber,
-                Balance = accountEntity.Balance
-            };
+			if (accountEntity.UserId != Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!))
+			{
+				return Forbid("Not enough rights.");
+			}
 
-            return Ok(accountDTO);
-        }
+			AccountDetailedDTO accountDTO = new()
+			{
+				Id = accountEntity.Id,
+				AccountNumber = accountEntity.AccountNumber,
+				HolderName = accountEntity.User!.UserName!,
+				HolderPhoneNumber = accountEntity.User.PhoneNumber!,
+				Balance = accountEntity.Balance
+			};
 
-        [HttpPost]
-        public async Task<IActionResult> CreateAccount([FromBody] UserDTO user, CancellationToken cancellationToken)
-        {
-            bool isExistAccount = await _unitOfWork.AccountRepository.ExistAccountByUserPhoneNumberAsync(user.PhoneNumber, cancellationToken);
+			return Ok(accountDTO);
+		}
 
-            if (isExistAccount)
-            {
-                return BadRequest("Account is already exist.");
-            }
+		[AllowAnonymous]
+		[HttpPost]
+		public async Task<IActionResult> CreateAccount([FromBody] UserDTO user, CancellationToken cancellationToken)
+		{
+			bool isExistAccount = await _unitOfWork.AccountRepository.ExistAccountByUserPhoneNumberAsync(user.PhoneNumber, cancellationToken);
 
-            UserEntity userEntity = new()
-            {
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                PhoneNumber = user.PhoneNumber
-            };
+			if (isExistAccount)
+			{
+				return Created();
+			}
 
-            AccountEntity accountEnitity = new()
-            {
-                User = userEntity
-            };
+			UserEntity? userEntity = new()
+			{
+				UserName = string.Join(" ", user.FirstName, user.LastName),
+				PhoneNumber = user.PhoneNumber
+			};
 
-            await _unitOfWork.AccountRepository.CreateAsync(accountEnitity, cancellationToken);
-            await _unitOfWork.CommitAsync();
+			AccountEntity accountEnitity = new()
+			{
+				User = userEntity
+			};
 
-            return Ok();
-        }
-    }
+			await _unitOfWork.AccountRepository.CreateAsync(accountEnitity, cancellationToken);
+			await _userManager.AddPasswordAsync(userEntity, user.Password);
+			await _unitOfWork.CommitAsync();
+
+			return Ok();
+		}
+
+		[AllowAnonymous]
+		[HttpPost("signin")]
+		public async Task<IActionResult> SignInAccount([FromBody] SignInUserDTO user, CancellationToken cancellationToken)
+		{
+			bool isExistAccount = await _unitOfWork.AccountRepository.ExistAccountByUserPhoneNumberAsync(user.PhoneNumber, cancellationToken);
+
+			if (!isExistAccount)
+			{
+				return NotFound("Account is not found.");
+			}
+
+			UserEntity userEntity = await _unitOfWork.UserRepository.GetUserByPhoneNumberAsync(user.PhoneNumber, cancellationToken);
+
+			bool isPasswordCorrect = await _userManager.CheckPasswordAsync(userEntity, user.Password);
+
+			if (!isPasswordCorrect)
+			{
+				return Unauthorized("Incorrect credentials");
+			}
+
+			await _userSignInManager.SignInAsync(userEntity, false);
+
+			return Ok();
+		}
+
+		[AllowAnonymous]
+		[HttpPost("signout")]
+		public async Task<IActionResult> SignOutAccount(CancellationToken cancellationToken)
+		{
+			string? authorizedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+			if (!string.IsNullOrWhiteSpace(authorizedUserId))
+			{
+				await _userSignInManager.SignOutAsync();
+			}
+
+			return Ok();
+		}
+	}
 }

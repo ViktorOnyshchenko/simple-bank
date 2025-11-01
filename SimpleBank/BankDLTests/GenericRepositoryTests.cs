@@ -1,5 +1,5 @@
 ﻿using BankDL.DataAccess;
-using BankDL.Models;
+using BankDL.Entities;
 using BankDL.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -120,8 +120,7 @@ namespace BankDLTests
 			{
 				User = new()
 				{
-					FirstName = "TestFirstName",
-					LastName = "TestLastName",
+					UserName = "TestUserName",
 					PhoneNumber = "TestPhoneNumber"
 				}
 			};

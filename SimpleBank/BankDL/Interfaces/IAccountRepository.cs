@@ -1,4 +1,4 @@
-﻿using BankDL.Models;
+﻿using BankDL.Entities;
 
 namespace BankDL.Interfaces
 {
